@@ -15,7 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-// @Component
+@Component
 public class AuthFilter extends OncePerRequestFilter {
 
     private ApiKeyCache apiKeyCache;
@@ -32,15 +32,15 @@ public class AuthFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
 
         String path = request.getRequestURI();
-        if (path.equals("/api/login")) {
+        if (!path.equals("/api/login")) {
             String apiKey = request.getHeader("X-Api-Key");
 
-            // if (!StringUtils.equals(apiKey, apiKeyCache.get())) {
-            // response.setStatus(HttpStatus.FORBIDDEN.value());
-            // response.setContentType("text/plain");
-            // response.getWriter().write("Please provide proper API key!");
-            // return;
-            // }
+            if (!StringUtils.equals(apiKey, apiKeyCache.get())) {
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                response.setContentType("text/plain");
+                response.getWriter().write("Please provide proper API key!");
+                return;
+            }
 
         }
 
