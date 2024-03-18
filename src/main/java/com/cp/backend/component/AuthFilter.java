@@ -14,8 +14,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class AuthFilter extends OncePerRequestFilter {
 
     private ApiKeyCache apiKeyCache;
@@ -32,8 +34,10 @@ public class AuthFilter extends OncePerRequestFilter {
             throws IOException, ServletException {
 
         String path = request.getRequestURI();
+        log.info("URL path is: " + path);
         if (!path.equals("/api/login")) {
             String apiKey = request.getHeader("X-Api-Key");
+            log.info("api key exists. {}", apiKey);
 
             if (!StringUtils.equals(apiKey, apiKeyCache.get())) {
                 response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -41,7 +45,6 @@ public class AuthFilter extends OncePerRequestFilter {
                 response.getWriter().write("Please provide proper API key!");
                 return;
             }
-
         }
 
         filterChain.doFilter(request, response);
